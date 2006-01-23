@@ -1,0 +1,554 @@
+%\VignetteIndexEntry{Annotation-Driven Clustering}
+%\VignetteDepends{golubEsets, vsn, hu6800}
+%\VignetteKeywords{clustering microarrays GO KEGG functional annotation}
+%\VignettePackage{adSplit}
+
+\documentclass[11pt,a4paper]{report}
+
+\usepackage{compdiag}
+\usepackage{amsmath,a4}
+\SweaveOpts{eps=false}
+
+\newcommand{\Robject}[1]{{\texttt{#1}}}
+\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{{\textit{#1}}}
+\newcommand{\Rclass}[1]{{\textit{#1}}}
+\newcommand{\Rmethod}[1]{{\textit{#1}}}
+\newcommand{\Rfunarg}[1]{{\texttt{#1}}}
+
+\title{Annotation-Driven Class Discovery  \bigskip \\
+       User's Guide to the Bioconductor package \Rpackage{adSplit}}
+\author{Claudio Lottaz\footnote{Corresponding author: 
+        \texttt{claudio.lottaz@molgen.mpg.de}},
+        Joern Toedling and Rainer Spang \bigskip \\
+        \small Max Planck Institute for Molecular Genetics\\ 
+         Computational Diagnostics, Department for Computational Molecular Biology \\
+         Ihnestr. 63-73, D-14195 Berlin, Germany}
+\reportnr{02}
+\year{2005}
+\abstract{
+  This is the vignette of the Bioconductor compliant packege
+  \Rpackage{adSplit}. We describe our implementation of {\it annotation-
+  driven clustering} for microarray gene expression profiling 
+  studies.
+}
+\date{}
+
+
+\begin{document}
+
+\maketitle
+
+<<echo=FALSE,results=hide>>=
+library(golubEsets)
+library(vsn)
+oldopt <- options(digits=3)
+on.exit( {options(oldopt)} )
+options(width=70)
+if (interactive()) { 
+    options(error=recover)
+}
+set.seed(123)
+@
+
+\chapter{Introduction}
+\label{sec:intro}
+
+ \textbf{Background:}
+ Clustering algorithms are widely used in the analysis of microarrays.
+ In clinical studies, they are not only used to cluster genes into groups
+ of co-regulated genes, but also for clustering patients, and thereby defining
+ novel disease entities based on gene expression profiles. 
+ Several distance based cluster algorithms have been suggested, 
+ but little attention has been paid to the choice of the metric on 
+ patient space. Even when using the Euclidean metric, including and excluding 
+ genes from the analysis leads to different distances between the same objects, 
+ and consequently to different clustering results.
+
+ \textbf{Methodology:}
+ In this package, we implement a novel algorithm for investigating the
+ dependency of clustering results on the choice of metric supporting
+ genes. Our method combines expression data and functional annotation
+ data. According to gene annotations, a list of candidate gene sets
+ with a unique functional characterization is generated.  Each set
+ defines a metric on patient space, and consequently a clustering of
+ patients. Based on a novel significance measure for clusterings, this
+ list is filtered. Significant clusterings are reported together with
+ the underlying gene sets and their functional definition.
+
+ \textbf{Intended results:} 
+ Our method reports clusterings defined by biologically focussed sets
+ of genes. In our annotation driven clusterings, we have observed
+ rediscoveries of clinically relevant patient subgroups through
+ biologically plausible sets of genes. Hence, we conjecture that our
+ method has the potential to reveal clinically relevant classes of
+ patients in an unsupervised manner.
+ 
+ \textbf{The algorithmic concept:} 
+ We suggest a systematic approach to gene selection in an unsupervised
+ setting.  We describe an algorithm that produces a list of
+ alternative clusterings using a variety of different metrics on
+ patient space.  While all metrics are of the Euclidean type, they
+ differ in the set of genes used for characterizing the patient
+ profiles. We derive candidate gene sets from functional annotation
+ data, and filter the list by a novel significance measure for
+ clustering strength.  For practical use, it is desirable to have
+ functional rationales characterizing clusterings.  For instance,
+ clusterings related to proliferation or apoptosis.  To this end, we
+ define candidate gene sets using functional annotations from the Gene
+ Ontology \cite{ashburner00gene} and from the Kyoto Encyclopedia of
+ Genes and Genomes \cite{kanehisa96toward}.
+
+ \textbf{The algorithm in a nutshell:}
+ 
+ Annotation-driven splits specific to the corresponding gene set are
+ computed using the k-means algorithm \cite{hartigan79k-means}. We use
+ functional annotations from chip-specific meta-data packages provided
+ in Bioconductor \cite{gentleman04bioconductor}. The quality of any
+ clusterings is assessed using the \emph{diagonal linear discriminant}
+ (DLD) score \cite{heydebreck01identifying}.  In order to determine
+ the statistical significance of a score, we also compute DLD scores
+ for restricted metrics resulting from randomly chosen gene sets.
+ Empirical p-values are calculated and false discovery rates (FDR)
+ computed according to Benjamini Hochber \cite{benjamini95controlling}. Finally, we
+ filter the list of clusterings for minimal subgroup size and to
+ control the FDR. In a nutshell, the algorithm consists of the following steps:\\
+
+\noindent For each biological term / pathway of interest, denoted $B_i$:
+\begin{enumerate}
+\item Find all $n_{B_i}$ genes annotated to $B_i$ and discard all others.
+\item \label{item:cluster} Perform 2-means clustering of reduced
+  expression matrix.  This yields an annotation-driven clustering
+  $C_{B_i}$.
+\item \label{item:score} Compute DLD score $S(C_{B_i})$ for this clustering.
+\item Draw 10000 random gene sets of size $n_{B_i}$ from the set of
+  all measured genes. For each of these random gene sets, compute
+  steps \ref{item:cluster} and \ref{item:score}.  This yields a vector
+  $\textbf{\textup{r}}_{n_{B_i}}$ of 10000 scores.
+\item Assign an empirical p-value to the original clustering, denoting
+  the proportion of entries of $\textbf{\textup{r}}_{n_{B_i}}$ being
+  greater or equal than $S(C_{B_i})$.  
+\item Correct the empirical p-values for multiple testing according to
+  Benjamini-Hochberg \cite{benjamini95controlling}. The resulting
+  q-values are used to control the false discovery rate of a \Rclass{splitSet}.
+\end{enumerate} 
+
+ \textbf{The structure of the vignette:}
+ The described package contains functions to facilitate these
+ steps. The first chapter describes, how to compute a split for a
+ given term of intrest. the second shows how to compute a random
+ distribution of DLD-scores to judge the significance of an
+ annotation-driven split. Finally, the last chapter describes how to
+ collect results for many terms of interest and illustrate the
+ achieved results.
+
+\chapter{Annotation-Driven Splits}
+\label{sec:splitting}
+
+ Before starting any analysis you have to load the \Rpackage{adSplit}
+ package in your R session as follows: 
+<<>>= 
+library(adSplit) 
+@ 
+ 
+ For illustration of \Rpackage{adSplit} usage we use the Golub data
+ set on acute leukemia \cite{golub99molecular} as it is stored in the
+ \Rpackage{golubEsets} experimental data package. For normalization we
+ use Bioconductor's \Rpackage{vsn} package implementing the variance
+ stabilization and calibration method by Huber et
+ al. \cite{huber02variance}. For 
+ preparing the data, issue the following commands:
+
+<<>>=
+library(vsn)
+library(golubEsets) 
+data(golubMerge) 
+golubNorm <- vsn(golubMerge, describe.preprocessing=FALSE, verbose=FALSE) 
+@
+
+\section{Initialize k-means with divisive hierarchical cluster centroids}
+
+ K-means clustering critically depends on its initialization step. We
+ derive an initialization based on the first split of a divisive
+ hierarchical clustering (Chapter 6 in \cite{kaufman90finding}).  Of
+ the resulting two clusters, we compute centroids which provide the
+ starting points for the k-means algorithm \cite{macqueen67methods}.
+ This has been shown to outperform standard k-means with random
+ starting points \cite{milligan80stage}.  In fact, k-means is used to
+ refine individual clusters and to correct inappropriate assignments
+ made by the hierarchical method.
+ 
+ We have packed this procedure into the function
+ \Rfunction{diana2means} of the here described package. In addition
+ this function computes DLD-scores for the generated splits using the
+ implementation taken from the ISIS package
+ \cite{heydebreck01identifying}. Actually,
+ the determined split is only returned when return.cut is set to
+ true. The following snipit of code uses the 10\% most variable genes
+ in the Golub-dataset to generate a split.
+
+<<>>=
+e <- exprs(golubNorm)
+vars <- apply(e, 1, var)
+e <- e[vars > quantile(vars,0.9),]
+
+diana2means(e)
+diana2means(e, return.cut=TRUE)
+@
+
+ This function returns a single number representing the splits
+ DLD-score as default, when the argument \Rfunarg{return.cut} is set
+ to \texttt{FALSE}. Otherwise an object of class \Rclass{split} holding
+ the list elements \texttt{cut} and \texttt{score} is returned. For
+ instance, the the split attributions can be extracted as follows:
+ 
+<<>>=
+x <- diana2means(e, return.cut=TRUE)
+x$cut
+@
+
+ For the computation of the DLD-score, this function takes into account
+ the best scoring \Rfunarg{ngenes} genes (rows). In order to avoid
+ excessive influence of single strikingly well separating genes, the
+ \Rfunarg{ignore.genes} argument can be used to dismiss the strongest
+ genes from the score.
+
+\section{Annotation-driven splits}
+
+ The central function for the generation of annotation driven splits
+ is called \Rfunction{adSplit}. It calls the above described function
+ \Rfunction{diana2means} on a restricted set of genes. This function
+ has a series of arguments, but its basic call is as follows:
+
+<<>>=
+adSplit(golubNorm, "GO:0006915", "hu6800")
+@
+
+ This command generates an annotation-driven split for the term
+ ''apoptosis`` encoded by the identifier ''GO:0006915``.
+ The string given as the chip's name is used to load the annotation
+ meta-data. Thus \Rpackage{adSplit} expects a library of the same
+ name to be installed, where it looks for the hashes
+ \Robject{<chip-name>GO2ALLPROBES} and \Robject{<chip-name>PATH2PROBE}
+ as they are provided by Bioconductor meta data packages. If we issue
+ a similar command for the term ''signal transduction`` (GO:0007165),
+ the following happens:
+
+<<>>=
+adSplit(golubNorm, "GO:0007165", "hu6800")
+@
+
+ This term has too many associated genes. Hence, it is skipped. In
+ order to generate splits related to more generic terms, we can provide
+ an explicit maximum limit for the amount of annotated genes to terms
+ of interest. For instance:
+
+<<>>=
+adSplit(golubNorm, "GO:0007165", "hu6800", max.probes=7000)
+@
+
+ This command generates the wanted split based on more than 2000
+ genes. \Rfunction{adSplit} returns an object of class \Rclass{splitSet}
+ with the following list elements:
+ \begin{enumerate}
+ \item \Robject{cuts}: a matrix of split attributions. One row per annotation
+    identifier (GO term or KEGG pathway for which a split has been
+    generated. One column per object in the dataset. 
+ \item \Robject{score}: one score per generated split
+ \item \Robject{pvalue}: one empirical p-value per generated split, or \Robject{NULL}.
+ \end{enumerate}
+ The object may also be empty in which case all elements are \Robject{NULL}.
+  
+\chapter{Empirical p-Values for Splits}
+\label{sec:pvalues}
+
+ In order to generate empirical p-values for a given annotation-driven
+ gene set, we suggest to sample random gene sets of the same size and
+ apply the split generation algorithm implemented in
+ \Rfunction{diana2means} to all 
+ of these gene sets. DLD-scores
+ computed for the random gene sets are used to approximate 
+ the score's null distribution.
+ The fraction of the scores from this
+ null distribution, which are higher than the observed score for the
+ gene set with common annotation, is used as empirical p-value. Some
+ details on how to compute these p-values with \Rpackage{adSplit} are
+ collected in this chapter.
+
+\section{Drawing random gene sets}
+
+ The first step needed for the random sampling is drawing a given
+ number of probe-sets measured in dataset. In order to reflect one
+ obvious characteristic of annotation based gene sets, 
+ once we have drawn one probe set at random, we always
+ include all other probe-sets representing the same gene 
+ into the random selection.
+ In order to speed up the repeated drawing procedure, we
+ use a hash containing one entry per EntrezGene (formerly LocusLink, still
+ called this in the annotation packages) 
+ identifier holding all associated probe-sets. 
+ This environment is generated from the
+ meta-data package LOCUSID-hash as follows:
+
+<<>>=
+LID2PSenv <- makeLID2PROBESenv(hu6800LOCUSID)
+@
+
+ The returned hash is used as follows to draw random sets of
+ probe-sets:
+
+<<>>=
+drawRandomPS(10, LID2PSenv, ls(LID2PSenv))
+@
+
+ \Rfunction{drawRandomPS} returns a named vector holding random
+ probe-set identifiers. The names of this vector corresponds to the
+ associated LOCUSLINK identifiers.
+
+\section{Generating DLD-score distributions}
+
+ The functions for drawing random sets of probe-sets described in the
+ previous section are combined with \Rfunction{diana2means} to generat
+ null-distributions of DLD-scores. This is implemented in the function
+ \Rfunction{randomDiana2means} which is used as follows:
+
+<<>>=
+scores <- randomDiana2means(20, exprs(golubNorm), "hu6800", ndraws = 1000) 
+@
+
+ The form of this distribution is skewed. The parameter
+ \Rfunarg{ignore.genes} changes this shape towards a more symmetric
+ shape as shown in the next figure. This is intuitive, since we remove
+ genes which drive DLD-scores and thus approach more closely a random
+ distribution.
+
+\setkeys{Gin}{width=15cm,height=7.5cm}
+<<fig=TRUE,height=3,width=6>>=
+scores2 <- randomDiana2means(20, exprs(golubNorm), "hu6800", 
+                            ndraws = 1000, ignore.genes=5) 
+par(mfrow=c(1,2))
+hist(scores,  nclass=30, main="", col="grey")
+hist(scores2, nclass=30, main="", col="grey")
+@
+
+ The left histogram here is the score distribution when including all
+ genes, the right one results from exclusion of best scoring genes.
+
+\section{Adding empirical p-values while generating annotation driven splits}
+
+ Finally, we can use the distribution generated with random sets of
+ probe sets to compute empirical p-values. This is done by the
+ \Rfunction{adSplit} function when \Rfunarg{B} is specified, the number
+ of samplings to be used.
+
+<<>>=
+glutamSplits <- adSplit(golubNorm, "KEGG:00251", "hu6800", B=1000) 
+@
+
+ This call returns an object of class \Rclass{splitSet} with an
+ additional entry called \Robject{pvalue}. The print method for the
+ \Rclass{splitSet} gives a summary on sets of splits and some
+ additional information, if a split set contains only 1 split:
+
+<<>>=
+print(glutamSplits)
+@
+
+\chapter{Working with Split-Sets}
+\label{sec:collect}
+
+\section{Generating split-sets}
+
+ The function \Rfunction{adSplit} accepst more than one annotation
+ identifier in one call. In this case it generates splits for each of
+ the provided identifier and collects the results into one single
+ returnde object. For instance:
+
+<<>>=
+x <- adSplit(golubNorm, c("GO:0007165","GO:0006915"), "hu6800", max.probes=7000)
+print(x)
+@
+
+ If the user doesn't want to specify few terms of interst in this
+ fashion, he/she may also provide one of the following specially
+ treated identifiers:
+ \begin{enumerate}
+ \item \texttt{GO}: all available GO terms are used as gene set candidates.
+ \item \texttt{KEGG}: all available KEGG pathways are used as gene set candidates.
+ \item \texttt{all}: both these sets of annotation identifiers are used.
+ \end{enumerate}
+
+ For instance, the following command determines all splits driven by
+ KEGG pathways without sampleing random gene lists for significance
+ analysis:
+
+<<results=hide>>=
+x <- adSplit(golubNorm, "KEGG", "hu6800")
+@
+<<>>=
+print(x)
+@
+
+ However, if empirical p-values are computed by sampling random gene lists, multiple testing is an issue to be considered. We use the \Rpackage{multtest} to correct our p-values and thus computing false discovery rates by the method suggested by Benjamini-Hochberg. The corresponding q-values are stored in the result's list element called \Rfunarg{qvalues}. You may consider for illustration the precomputed object \Robject{golubKEGGSplits}:
+
+<<>>=
+data(golubKEGGSplits)
+print(golubKEGGSplits)
+summary(golubKEGGSplits$qvalues)
+@
+
+This object has been precomputed with the following command:
+
+\begin{quote}
+\begin{verbatim}
+> golubKEGGSplits <- adSplit(golubNorm, "KEGG", "hu6800", B=1000)
+\end{verbatim}
+\end{quote}
+
+ It thus contains all splits driven by KEGG pathways and holds
+ empirical p-values deduced from 1000 random gene lists. Pathways which
+ have fewer than 20 genes associated are thereby skipped from the
+ analysis.
+
+\section{Graphical illustrations}
+
+ For showing the illustration utilities implemented in
+ \Rpackage{adSplit}, we use the precomputed object
+ \Robject{golubKEGGSplits} included in the \Rpackage{adSplit} package.
+
+ The \Robject{golubKEGGSplits} object contains 70 splits and
+ corresponding empirical p-values and corrected q-values. The split set
+ is ordered according to p-values such that the first entries are the
+ most significant ones. In order to get an overview of whether
+ significant splits and how many of them are generated, the package
+ \Rpackage{adSplit} offers a histogram method for objects of class
+ \Rclass{splitSet} called as follows:
+
+\setkeys{Gin}{width=12cm,height=12cm}
+<<fig=TRUE,width=5,height=5>>=
+data(golubKEGGSplits)
+hist(golubKEGGSplits)
+@
+
+ In this histogram the empirical p-values are drawn as usual in a
+ histogram. In addition, the corresponding q-values corrected for
+ multiple testing are plotted as a line into the histogram. The
+ corresponding scale is shown to the left of the plot.
+
+ An \Rfunction{image} method on the same objects can be used to get an
+ actual representation of all splits generated. A filter argument
+ called \Rfunarg{filter.fdr} is used to focus on splits with a low false
+ discovery rate. The following call requires a set of splits with less
+ then 30\% expected false positives.
+
+<<echo=FALSE,result=FALSE>>=
+image(golubKEGGSplits, filter.fdr=0.3, outfile="splitSet.eps", res=300)
+@
+
+\begin{quotation}
+\begin{verbatim}
+image(golubKEGGSplits, filter.fdr=0.3)
+\end{verbatim}
+\end{quotation}
+
+\includegraphics[width=15.5cm,height=3cm]{splitSet}
+
+ In this image, each column corresponds to a patient and each row
+ corresponds to an annotation. The colors represent to which group the
+ corresponding patient is attributed with respect to the corresponding
+ annotation. This image is clustered in both directions in order to
+ bring similar splits as well as similar patients close together.
+
+
+\section*{Acknowledgements}
+
+This research has been supported by BMBF grant 031U117/031U217 of the
+German Federal Ministry of Education and the National Genome Research
+Network.
+
+%\bibliographystyle{plain}
+%\bibliography[ompdiag}
+\begin{thebibliography}{1}
+
+\bibitem{ashburner00gene}
+M~Ashburner, CA~Ball, JA~Blake, D~Botstein, H~Butler, JM~Cherry, AP~Davis,
+  K~Dolinski, SS~Dwight, JT~Eppig, MA~Harris, DP~Hill, L~Issel-Tarver,
+  A~Kasarskis, S~Lewis, JC~Matese, JE~Richardson, M~Ringwald, GM~Rubin, and
+  G~Sherlock.
+\newblock Gene ontology: tool for the unification of biology. the gene ontology
+  consortium.
+\newblock {\em Nat Genet}, 25(1):25--29, May 2000.
+
+\bibitem{benjamini95controlling}
+Yoav Benjamini and Yosef Hochberg.
+\newblock Controlling the false discovery rate: {A} practical and powerful
+  approach to multiple testing.
+\newblock {\em Journal of the Royal Statistical Society: Series B},
+  57(1):289--300, 1995.
+
+\bibitem{gentleman04bioconductor}
+RC~Gentleman, VJ~Carey, DM~Bates, B~Bolstad, M~Dettling, S~Dudoit, B~Ellis,
+  L~Gautier, Y~Ge, J~Gentry, K~Hornik, T~Hothorn, W~Huber, S~Iacus, R~Irizarry,
+  F~Leisch, C~Li, M~Maechler, AJ~Rossini, G~Sawitzki, C~Smith, G~Smyth,
+  L~Tierney, JY~Yang, and J~Zhang.
+\newblock Bioconductor: {O}pen software development for computational biology
+  and bioinformatics.
+\newblock {\em Genome Biology}, 5(10):R80, 2004.
+
+\bibitem{golub99molecular}
+TR~Golub, DK~Slonim, P~Tamayo, C~Huard, M~Gaasenbeek, JP~Mesirov, H~Coller,
+  ML~Loh, JR~Downing, MA~Caligiuri, CD~Bloomfield, and ES~Lander.
+\newblock Molecular classification of cancer: class discovery and class
+  prediction by gene expression monitoring.
+\newblock {\em Science}, 286(5439):531--7, Oct 1999.
+
+\bibitem{hartigan79k-means}
+JA~Hartigan and M~A Wong.
+\newblock A k-means clustering algorithm.
+\newblock {\em Applied Statistics}, 28:100--4, 1979.
+
+\bibitem{huber02variance}
+W~Huber, A~von Heydebreck, H~S{\"u}ltmann, A~Poustka, and M~Vingron.
+\newblock Variance stabilization applied to microarray data calibration and to
+  the quantification of differential expression.
+\newblock {\em Bioinformatics}, 18(Suppl 1):96--104, 2002.
+
+\bibitem{kanehisa96toward}
+M~Kanehisa.
+\newblock Toward pathway engineering: a new database of genetic and molecular
+  pathways.
+\newblock {\em Sci \& Tech Japan}, 59:34--8, 1996.
+
+\bibitem{heydebreck01identifying}
+A~von Heydebreck, W~Huber, A~Poustka, and M~Vingron.
+\newblock Identifying splits with clear separation: a new class discovery
+  method for gene expression data.
+\newblock {\em Bioinformatics}, 17(Suppl 1):S107--14, 2001.
+
+\bibitem{kaufman90finding}
+Kaufman L, Rousseeuw PJ (1990) Finding Groups in Data: An Introduction to
+  Cluster Analysis.
+\newblock New York: Wiley.
+
+\bibitem{macqueen67methods}
+MacQueen JB (1967) Some methods for classification and analysis of multivariate
+  observations.
+\newblock In: Symposium on Math, Statistics, and Probability. volume~1, pp.
+  281--97.
+
+\bibitem{milligan80stage}
+Milligan G, Sokol L (1980) A two stage clustering algorithm with robust
+  recovery characteristics.
+\newblock Educational and Psychological Measurement 40:755--9.
+
+\end{thebibliography}
+
+\end{document} 
+
+
+
+
+
+
+
+

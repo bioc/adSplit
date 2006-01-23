@@ -1,0 +1,184 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%   CompDiag Technical Reports
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%   written by Claudio Lottaz (MPI-MG) in November 2004
+%   (copy&paste from various styles by Florian, Steffi andothers)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%   Say hi
+%
+
+\def\fileversion{1.0}
+\def\filename{compdiag}
+\def\filedate{2005/02/05}
+
+\ProvidesPackage{compdiag}[\filedate\space\fileversion\space CompDiag
+                 package by FM & CL]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%   Some tricks for generating PDF
+%
+
+% are we using pdftex or normaltex
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+   \pdffalse
+\else
+   \pdfoutput=1
+   \pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+  \usepackage[pdftex]{color}
+  \usepackage[pdftex,linktocpage]{hyperref}
+  \hypersetup{pdfstartview={FitH},
+              pdfpagemode={UseOutlines},
+              pdftitle={\@title},
+              pdfauthor={\#author},
+              pdfsubject={CompDiag Technical Report}}
+\else
+  \usepackage[dvips]{graphicx}
+  \usepackage[dvips]{color}
+  \usepackage{hyperref}
+\fi
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%   some control of the pagestyle
+%
+
+\pagestyle{headings}
+\oddsidemargin 0cm
+\evensidemargin 0cm
+%\textwidth 15cm
+%\textheight 22cm
+\usepackage{a4}
+\usepackage[a4paper,left=3cm,right=3cm]{geometry}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%   Auxiliaries
+%
+
+\definecolor{Red}{rgb}{0.7,0,0}
+\definecolor{Blue}{rgb}{0,0,0.8}
+\definecolor{Grau}{rgb}{0.25,0.25,0.25}
+
+\def\@mpilogo{\includegraphics[height=25mm,keepaspectratio]{minerva_bcb}}
+\def\@bcblogo{\includegraphics[height=27mm,keepaspectratio]{bcb_logo}}
+
+%   Theorem-like definitions
+\usepackage{theorem}
+\theoremstyle{break}
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}{Lemma}[chapter]
+\newtheorem{proposition}{Proposition}[chapter]
+\newtheorem{corollary}[proposition]{Corollary}
+\theoremstyle{plain} {\theorembodyfont{\upshape}
+\newtheorem{definition}{Definition}[chapter]}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%   Titlepage
+%
+
+\def\reportnr#1{\gdef\@reportnr{#1}}
+\def\year#1{\gdef\@year{#1}}
+\def\abstract#1{\gdef\@abstract{#1}}
+
+\renewcommand\maketitle{\begin{titlepage}%
+  \@bcblogo 
+  \parbox[b][27mm]{93mm}{
+    \hrule height .5pt
+    \center{ 
+      \sffamily{   
+        \textbf{
+          {\small Max Planck Institute for Molecular Genetics} \\
+         %{\small -- Computational Molecular Biology -- }       \\
+          {\small Computational Diagnostics Group @  Dept. Vingron}   \\
+          {\footnotesize Ihnestrasse 63-73, D-14195 Berlin, Germany}   \\
+          {\footnotesize http://compdiag.molgen.mpg.de/}\\
+        }
+      }
+    }
+    \vfill 
+    \hrule height .5pt
+  }
+  \@mpilogo 
+  \vspace{3cm}
+  \begin{center}
+    \baselineskip=24pt
+    {\LARGE\bf \@title} \\
+    \baselineskip=12pt
+    \vspace*{2cm}
+    {\large\bf \@author} \\
+        \vspace{2cm}
+    {\large Technical Report \\ Nr. \@year/\@reportnr}\\
+    \vspace*{3cm}
+    {\large\bf Abstract}
+    \bigskip
+  \end{center}
+  \@abstract
+\end{titlepage}
+\baselineskip=15pt
+\tableofcontents
+%\listoffigures
+%\listoftables
+%\listofalgorithms
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%   change the bibliography such that it generates a toc-entry
+%
+
+\renewenvironment{thebibliography}[1]
+     {\chapter{\bibname}
+      \list{\@biblabel{\@arabic\c@enumiv}}%
+           {\settowidth\labelwidth{\@biblabel{#1}}%
+            \leftmargin\labelwidth
+            \advance\leftmargin\labelsep
+            \@openbib@code
+            \usecounter{enumiv}%
+            \let\p@enumiv\@empty
+            \renewcommand\theenumiv{\@arabic\c@enumiv}}%
+      \sloppy
+      \clubpenalty4000
+      \@clubpenalty \clubpenalty
+      \widowpenalty4000%
+      \sfcode`\.\@m}
+     {\def\@noitemerr
+       {\@latex@warning{Empty `thebibliography' environment}}%
+      \endlist}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%   Typesetting algorithms
+%
+
+%\usepackage[algoruled,lined]{algorithm2e}
+
+% my preferred options
+%\dontprintsemicolon
+%\renewcommand{\algomargin}{5mm}
+%\renewcommand{\@algoskip}{\vspace{\algomargin}}%
+
+% my own language elements
+%\SetKwFor{Proc}{procedure}{}{end.}%
+%\SetKwFor{Func}{function}{}{end.}%
+
+% include chapter numbers for algorithms (algorithm2e-package required)
+%\renewcommand{\thealgocf}{\thechapter.\arabic{algocf}}
+
+%
+%   End of File
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
