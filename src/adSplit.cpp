@@ -186,45 +186,6 @@ int compare_descending(const void *x, const void *y) {
   return (d<0) ? 1 : ((d>0) ? -1 : 0);
 }
 
-// ---------------------------------------------------------------
-// Returns in x[0...nsel-1] the largest nsel elements of the
-// array x[0...nrow-1]. Modified from Numerical Recipes "hpsel"
-// ---------------------------------------------------------------
-void hpsel(doublewithindex* x, int nrow, int nsel) {
-
-  //  if ((nsel<1) || (nsel > nrow/2)) {
-  //  throw ValueOutOfBounds(__LINE__,  nsel, 1, nrow/2); 
-  //    // sorting all elements leaves the largest ones in 1:nsel
-  //    qsort(x, nrow, sizeof(doublewithindex), compare_descending);
-  //    return;
-  //  }
-
-  doublewithindex swap;
-  qsort(x, nsel, sizeof(doublewithindex), compare_ascending);
-  // this leaves the smallest element of x[0...nsel-1] in x[0]
-
-  for (int i = nsel; i < nrow; i++) {
-    if (x[i].value > x[0].value) {
-      x[0] = x[i];
-      for (int j=1;;) {         // sift up
-	int k = j << 1;
-	if  (k > nsel) break;
-	if ((k != nsel) && (x[k-1].value > x[k].value)) k++;
-	if (x[k-1].value >= x[j-1].value) break;
-	swap   = x[k-1];
-        x[k-1] = x[j-1];
-	x[j-1] = swap;
-	j=k;
-      } // for j
-    }
-  } // for i
-
-  qsort(x, nsel, sizeof(doublewithindex), compare_descending);
-  // descending order: x[0] is the largest, ... x[nsel-1] is the
-  // nsel-largest.
-  return;  
-}
-
 //--------------------------------------------------------------------
 // ttesttwo
 // INPUT
@@ -303,8 +264,8 @@ double tscore(double* data, int nrow, int ncol, split& s, isis_pars& par) {
   }
   delete[] list;
 
-  // partial sort (first par.p elements of array twi[0...nrow-1])
-  hpsel(twi, nrow, par.p);
+  // we need the highest scores generated
+  qsort(twi, nrow, sizeof(doublewithindex), compare_descending);
 
   // a: the discriminant axis
   double* a = new double[par.p];  
