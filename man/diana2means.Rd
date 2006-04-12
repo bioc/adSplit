@@ -49,11 +49,10 @@ diana2means(mydata, mingroupsize = 5,
 # get golub data
 library(vsn)
 library(golubEsets)
-data(golubMerge)
-golubNorm <- vsn(golubMerge, describe.preprocessing=FALSE, verbose=FALSE)
+data(Golub_Merge)
 
 # use 10% most variable genes
-e <- exprs(golubNorm)
+e <- exprs(Golub_Merge)
 vars <- apply(e, 1, var)
 e <- e[vars > quantile(vars,0.9),]
 

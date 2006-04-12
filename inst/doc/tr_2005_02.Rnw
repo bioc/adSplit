@@ -1,5 +1,5 @@
 %\VignetteIndexEntry{Annotation-Driven Clustering}
-%\VignetteDepends{golubEsets, vsn, hu6800}
+%\VignetteDepends{golubEsets, hu6800}
 %\VignetteKeywords{clustering microarrays GO KEGG functional annotation}
 %\VignettePackage{adSplit}
 
@@ -41,7 +41,6 @@
 
 <<echo=FALSE,results=hide>>=
 library(golubEsets)
-library(vsn)
 oldopt <- options(digits=3)
 on.exit( {options(oldopt)} )
 options(width=70)
@@ -153,17 +152,12 @@ library(adSplit)
  
  For illustration of \Rpackage{adSplit} usage we use the Golub data
  set on acute leukemia \cite{golub99molecular} as it is stored in the
- \Rpackage{golubEsets} experimental data package. For normalization we
- use Bioconductor's \Rpackage{vsn} package implementing the variance
- stabilization and calibration method by Huber et
- al. \cite{huber02variance}. For 
+ \Rpackage{golubEsets} experimental data package. For
  preparing the data, issue the following commands:
 
 <<>>=
-library(vsn)
 library(golubEsets) 
-data(golubMerge) 
-golubNorm <- vsn(golubMerge, describe.preprocessing=FALSE, verbose=FALSE) 
+data(Golub_Merge) 
 @
 
 \section{Initialize k-means with divisive hierarchical cluster centroids}
@@ -188,7 +182,7 @@ golubNorm <- vsn(golubMerge, describe.preprocessing=FALSE, verbose=FALSE)
  in the Golub-dataset to generate a split.
 
 <<>>=
-e <- exprs(golubNorm)
+e <- exprs(Golub_Merge)
 vars <- apply(e, 1, var)
 e <- e[vars > quantile(vars,0.9),]
 
@@ -221,7 +215,7 @@ x$cut
  has a series of arguments, but its basic call is as follows:
 
 <<>>=
-adSplit(golubNorm, "GO:0006915", "hu6800")
+adSplit(Golub_Merge, "GO:0006915", "hu6800")
 @
 
  This command generates an annotation-driven split for the term
@@ -235,7 +229,7 @@ adSplit(golubNorm, "GO:0006915", "hu6800")
  the following happens:
 
 <<>>=
-adSplit(golubNorm, "GO:0007165", "hu6800")
+adSplit(Golub_Merge, "GO:0007165", "hu6800")
 @
 
  This term has too many associated genes. Hence, it is skipped. In
@@ -244,7 +238,7 @@ adSplit(golubNorm, "GO:0007165", "hu6800")
  of interest. For instance:
 
 <<>>=
-adSplit(golubNorm, "GO:0007165", "hu6800", max.probes=7000)
+adSplit(Golub_Merge, "GO:0007165", "hu6800", max.probes=7000)
 @
 
  This command generates the wanted split based on more than 2000
@@ -313,7 +307,7 @@ drawRandomPS(10, LID2PSenv, ls(LID2PSenv))
  \Rfunction{randomDiana2means} which is used as follows:
 
 <<>>=
-scores <- randomDiana2means(20, exprs(golubNorm), "hu6800", ndraws = 1000) 
+scores <- randomDiana2means(20, exprs(Golub_Merge), "hu6800", ndraws = 1000) 
 @
 
  The form of this distribution is skewed. The parameter
@@ -324,7 +318,7 @@ scores <- randomDiana2means(20, exprs(golubNorm), "hu6800", ndraws = 1000)
 
 \setkeys{Gin}{width=15cm,height=7.5cm}
 <<fig=TRUE,height=3,width=6>>=
-scores2 <- randomDiana2means(20, exprs(golubNorm), "hu6800", 
+scores2 <- randomDiana2means(20, exprs(Golub_Merge), "hu6800", 
                             ndraws = 1000, ignore.genes=5) 
 par(mfrow=c(1,2))
 hist(scores,  nclass=30, main="", col="grey")
@@ -342,7 +336,7 @@ hist(scores2, nclass=30, main="", col="grey")
  of samplings to be used.
 
 <<>>=
-glutamSplits <- adSplit(golubNorm, "KEGG:00251", "hu6800", B=1000) 
+glutamSplits <- adSplit(Golub_Merge, "KEGG:00251", "hu6800", B=1000) 
 @
 
  This call returns an object of class \Rclass{splitSet} with an
@@ -365,7 +359,7 @@ print(glutamSplits)
  returnde object. For instance:
 
 <<>>=
-x <- adSplit(golubNorm, c("GO:0007165","GO:0006915"), "hu6800", max.probes=7000)
+x <- adSplit(Golub_Merge, c("GO:0007165","GO:0006915"), "hu6800", max.probes=7000)
 print(x)
 @
 
@@ -383,7 +377,7 @@ print(x)
  analysis:
 
 <<results=hide>>=
-x <- adSplit(golubNorm, "KEGG", "hu6800")
+x <- adSplit(Golub_Merge, "KEGG", "hu6800")
 @
 <<>>=
 print(x)
@@ -401,7 +395,7 @@ This object has been precomputed with the following command:
 
 \begin{quote}
 \begin{verbatim}
-> golubKEGGSplits <- adSplit(golubNorm, "KEGG", "hu6800", B=1000)
+> golubKEGGSplits <- adSplit(Golub_Merge, "KEGG", "hu6800", B=1000)
 \end{verbatim}
 \end{quote}
 

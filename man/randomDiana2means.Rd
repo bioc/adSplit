@@ -33,10 +33,9 @@ randomDiana2means(nprobes, data, chip, ndraws = 10000,
 # prepare data
 library(vsn) 
 library(golubEsets) 
-data(golubMerge) 
-golubNorm <- vsn(golubMerge, describe.preprocessing=FALSE, verbose=FALSE)
+data(Golub_Merge) 
 
 # generate DLD scores
-scores <- randomDiana2means(20, exprs(golubNorm), "hu6800", ndraws = 500) 
+scores <- randomDiana2means(20, exprs(Golub_Merge), "hu6800", ndraws = 500) 
 }
 \keyword{datagen}

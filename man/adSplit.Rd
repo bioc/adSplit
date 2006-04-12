@@ -77,21 +77,19 @@ adSplit(mydata, annotation.ids, chip.name,
          \code{\link{image.splitSet}}}
 \examples{ 
 # prepare data
-library(vsn) 
 library(golubEsets) 
-data(golubMerge) 
-golubNorm <- vsn(golubMerge, describe.preprocessing=FALSE, verbose=FALSE)
+data(Golub_Merge) 
 
 # generate annotation-driven splits for apoptosis and signal transduction
-x <- adSplit(golubNorm, "GO:0006915", "hu6800")
-x <- adSplit(golubNorm, c("GO:0007165","GO:0006915"), "hu6800", max.probes=7000)
+x <- adSplit(Golub_Merge, "GO:0006915", "hu6800")
+x <- adSplit(Golub_Merge, c("GO:0007165","GO:0006915"), "hu6800", max.probes=7000)
 
 # generate a split for glutamate metabolism including 
 # an empirical p-value
-x <- adSplit(golubNorm, "KEGG:00251", "hu6800", B=100)
+x <- adSplit(Golub_Merge, "KEGG:00251", "hu6800", B=100)
 
 # generate splits for all KEGG pathways.
-x <- adSplit(golubNorm, "KEGG", "hu6800")
+x <- adSplit(Golub_Merge, "KEGG", "hu6800")
 image(x)
 }
 \keyword{datagen}

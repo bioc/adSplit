@@ -2,7 +2,7 @@
 diana2means <- function(mydata, mingroupsize=5, ngenes=50, ignore.genes=5, 
                         return.cut=FALSE) {
 
-  if (class(mydata) == "exprSet") mydata <- exprs(mydata)
+  if (class(mydata) %in% c("exprSet","ExpressionSet")) mydata <- exprs(mydata)
   nsamples <- ncol(mydata)
   na.cut <- rep(NA, nsamples)
 

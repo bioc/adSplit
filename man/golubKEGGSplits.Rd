@@ -19,7 +19,7 @@
 
   golubKEGGSplits <- adSplit(golubNorm, "KEGG", "hu6800", B=1000)
 
-  where \code{golubNorm} is a normalized version of \code{golubMerge}
+  where \code{golubNorm} is a normalized version of \code{Golub_Merge}
   from the \code{golubEsets} package.
 }
 \examples{
