@@ -44,7 +44,7 @@ diana2means(mydata, mingroupsize = 5,
   \item{score}{the DLD-score achieved by the split.}
 }
 \author{Joern Toedling, Claudio Lottaz}
-\seealso{\code{\link{diana}}}
+\seealso{\code{\link[cluster]{diana}}}
 \examples{
 # get golub data
 library(vsn)
