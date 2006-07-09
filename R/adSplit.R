@@ -4,6 +4,7 @@ adSplit <- function(mydata, annotation.ids, chip.name, min.probes=20, max.probes
   # initialize
   if (class(mydata) %in% c("exprSet","ExpressionSet")) mydata <- exprs(mydata)
   nsamples <- ncol(mydata)
+  nprobesets <- nrow(mydata)
   if (is.null(max.probes)) max.probes <- round(nrow(mydata)/10, 0)
   collected.res <- list(cuts=NULL, scores=NULL, pvalues=NULL)
   class(collected.res) <- "splitSet"
@@ -12,6 +13,9 @@ adSplit <- function(mydata, annotation.ids, chip.name, min.probes=20, max.probes
   require(chip.name, character.only=TRUE)
   GOenv   <- eval(as.symbol(paste(chip.name, "GO2ALLPROBES", sep="")))
   KEGGenv <- eval(as.symbol(paste(chip.name, "PATH2PROBE", sep="")))
+  chipProebeSets <- length(eval(as.symbol(paste(chip.name, "ACCNUM",sep=""))))
+  if (chipProebeSets != nprobesets) 
+    stop("Expected ", chipProebeSets, " probe-sets for ", chip.name, ", received ", nprobesets)
   if (length(annotation.ids) == 1) {
     if (annotation.ids == "GO") {
       annotation.ids <- ls(GOenv)
