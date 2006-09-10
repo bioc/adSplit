@@ -278,21 +278,20 @@ adSplit(Golub_Merge, "GO:0007165", "hu6800", max.probes=7000)
  include all other probe-sets representing the same gene 
  into the random selection.
  In order to speed up the repeated drawing procedure, we
- use a hash containing one entry per EntrezGene (formerly LocusLink, still
- called this in the annotation packages) 
+ use a hash containing one entry per EntrezGene 
  identifier holding all associated probe-sets. 
  This environment is generated from the
- meta-data package LOCUSID-hash as follows:
+ meta-data package ENTREZID-hash as follows:
 
 <<>>=
-LID2PSenv <- makeLID2PROBESenv(hu6800LOCUSID)
+EID2PSenv <- makeEID2PROBESenv(hu6800ENTREZID)
 @
 
  The returned hash is used as follows to draw random sets of
  probe-sets:
 
 <<>>=
-drawRandomPS(10, LID2PSenv, ls(LID2PSenv))
+drawRandomPS(10, EID2PSenv, ls(EID2PSenv))
 @
 
  \Rfunction{drawRandomPS} returns a named vector holding random

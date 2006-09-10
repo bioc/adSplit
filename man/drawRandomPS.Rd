@@ -7,22 +7,22 @@
   a whole.
 }
 \usage{
-drawRandomPS(nps, LID2PSenv, allLIDs)
+drawRandomPS(nps, EID2PSenv, allEIDs)
 }
 \arguments{
   \item{nps}{number of probe-sets to be drawn.}
-  \item{LID2PSenv}{a hash mapping LOCUSLINK to probe-set identifiers.}
-  \item{allLIDs}{vector of all LOCUSLINK identifiers represented on a chip.}
+  \item{EID2PSenv}{a hash mapping EntrezGene to probe-set identifiers.}
+  \item{allEIDs}{vector of all EntrezGene identifiers represented on a chip.}
 }
 \value{
   A named vector of probe-set identifiers. The names correspond to the
-  LOCUSLINK identifiers.
+  EntrezGene identifiers.
 }
 \author{Claudio Lottaz}
 \examples{
 # draw ten random probe-sets from hu6800
 library(hu6800)
-LID2PSenv <- makeLID2PROBESenv(hu6800LOCUSID)
-drawRandomPS(10, LID2PSenv, ls(LID2PSenv))
+EID2PSenv <- makeEID2PROBESenv(hu6800ENTREZID)
+drawRandomPS(10, EID2PSenv, ls(EID2PSenv))
 }
 \keyword{datagen}

@@ -10,7 +10,7 @@ adSplit <- function(mydata, annotation.ids, chip.name, min.probes=20, max.probes
   class(collected.res) <- "splitSet"
 
   # get annotation ids if not provided directly
-  require(chip.name, character.only=TRUE)
+  require(package=chip.name, character.only=TRUE)
   GOenv   <- eval(as.symbol(paste(chip.name, "GO2ALLPROBES", sep="")))
   KEGGenv <- eval(as.symbol(paste(chip.name, "PATH2PROBE", sep="")))
   chipProebeSets <- length(eval(as.symbol(paste(chip.name, "ACCNUM",sep=""))))
@@ -144,23 +144,23 @@ hist.splitSet <- function(x, main="Distribution of p-Values", xlab="p-values",
   lines(x$pvalues, m*x$qvalues)
 }
 
-makeLID2PROBESenv <- function(LIDenv) {
-  # expects a hash with LOCUSIDs as values and Affy-probes as keys
-  # generates a hash with LOCUSIDs as keys and Affy-probes as values
+makeEID2PROBESenv <- function(EIDenv) {
+  # expects a hash with ENTREZIDs as values and Affy-probes as keys
+  # generates a hash with ENTREZIDs as keys and Affy-probes as values
   env <- new.env(hash=TRUE)
-  for (affyid in ls(LIDenv)) {
-    lid <- as.character(get(affyid, LIDenv))
+  for (affyid in ls(EIDenv)) {
+    lid <- as.character(get(affyid, EIDenv))
     if (!exists(lid, env)) assign(lid, affyid, env)
     else assign(lid, c(get(lid, env), affyid), env)
   }
   return(env)
 }
 
-drawRandomPS <- function(nps, LID2PSenv, allLIDs){
+drawRandomPS <- function(nps, EID2PSenv, allEIDs){
   # nps: number of probe set to draw at random
   # chip: name of the chip
-  drawnLIDs <- sample(allLIDs,nps,replace=FALSE)
-  drawnpsids <- unlist(mget(as.character(drawnLIDs), LID2PSenv))
+  drawnEIDs <- sample(allEIDs,nps,replace=FALSE)
+  drawnpsids <- unlist(mget(as.character(drawnEIDs), EID2PSenv))
   return(drawnpsids[1:nps])
 } #drawRandomPS
 
@@ -172,14 +172,14 @@ randomDiana2means <- function(nprobes,data,chip,ndraws=10000, ngenes=50,ignore.g
   #ignore.genes: number of genes to disregard for score calculation
   cat("  determining", ndraws, "random DLD-scores with",nprobes,
       "probe sets each (wait for", round(ndraws/100,0), "dots)\n  ")
-  require(chip, character.only=TRUE)
+  require(package=chip, character.only=TRUE)
   randscores <- numeric(ndraws) # initialize
-  LIDenv <- eval(as.symbol(paste(chip, "LOCUSID", sep="")))
-  LID2PSenv <- makeLID2PROBESenv(LIDenv)
-  allLIDs <- ls(LID2PSenv)
+  EIDenv <- eval(as.symbol(paste(chip, "ENTREZID", sep="")))
+  EID2PSenv <- makeEID2PROBESenv(EIDenv)
+  allEIDs <- ls(EID2PSenv)
   for (i in 1:ndraws){
     if(i%%100==0) cat(".")
-    randps <- drawRandomPS(nprobes, LID2PSenv, allLIDs)
+    randps <- drawRandomPS(nprobes, EID2PSenv, allEIDs)
 #    randps <- sample(1:nrow(data), nprobes, replace=FALSE)
     randdata <- data[randps,,drop=FALSE]
     randscores[i] <- diana2means(randdata, 1, ngenes,
