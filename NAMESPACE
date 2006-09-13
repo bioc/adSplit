@@ -6,7 +6,7 @@ importFrom(cluster, diana)
 #importFrom(multtest, mt.rawp2adjp)
 
 export(adSplit, diana2means, drawRandomPS, 
-       randomDiana2means, makeLID2PROBESenv)
+       randomDiana2means, makeEID2PROBESenv)
 
 S3method(print, splitSet)
 S3method(hist, splitSet)
