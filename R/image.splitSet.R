@@ -131,7 +131,7 @@ image.splitSet <- function(x, filter.fdr=1, main="", show.graph=FALSE,
 
 computeOverlap <- function(cuts, chip.name, expr.mat=NULL) {
   # determine genes associated to cuts
-  library(chip.name, character.only=TRUE)
+  require(package=chip.name, character.only=TRUE)
   genes <- list()
   env <- eval(as.symbol(paste(chip.name, "GO2ALLPROBES", sep="")))
   for (i in grep("GO:", rownames(cuts))) {
