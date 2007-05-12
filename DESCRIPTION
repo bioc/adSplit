@@ -12,7 +12,7 @@ Depends: R (>= 2.1.0), methods (>= 2.1.0), stats (>= 2.1.0), cluster (>= 1.9.1),
 	Biobase (>= 1.5.12), affy (>= 1.6.7), GO (>= 1.8.1), KEGG (>= 1.8.1)
 Suggests: golubEsets (>= 1.0), vsn (>= 1.5.0), hu6800 (>= 1.8.1)
 biocViews: Microarray, Statistics, Clustering
-SaveImage:	yes
+LazyLoad:	yes
 URL: http://compdiag.molgen.mpg.de/software/index.shtml
 License: GPL version 2.0 or newer
 
