@@ -14,6 +14,4 @@ Suggests: golubEsets (>= 1.0), vsn (>= 1.5.0), hu6800 (>= 1.8.1)
 biocViews: Microarray, Statistics, Clustering
 LazyLoad:	yes
 URL: http://compdiag.molgen.mpg.de/software/index.shtml
-License: GPL version 2.0 or newer
-
-
+License: GPL (>= 2)
