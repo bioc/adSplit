@@ -1,11 +1,12 @@
 \name{print.splitSet}
 \alias{print.splitSet}
+\alias{print,splitSet-method}
 \title{Print Summaries for splitSets}
 \description{
   Prints information of splitSets.
 }
 \usage{
-print.splitSet(x, ...)
+\method{print}{splitSet}(x, ...)
 }
 \arguments{
   \item{x}{the splitSet-object to be described.}

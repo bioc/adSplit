@@ -1,11 +1,12 @@
 \name{print.split}
 \alias{print.split}
+\alias{print,split-method}
 \title{Print Information on Single Splits}
 \description{
   Print information on a single split.
 }
 \usage{
-print.split(x, ...)
+\method{print}{split}(x, ...)
 }
 \arguments{
   \item{x}{the split-object to be described.}

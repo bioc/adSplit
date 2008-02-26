@@ -1,6 +1,7 @@
 useDynLib(adSplit)
 
 import(methods)
+importFrom(graphics, hist, image)
 importFrom(stats, cutree, kmeans)
 importFrom(cluster, diana)
 #importFrom(multtest, mt.rawp2adjp)
@@ -12,4 +13,3 @@ S3method(print, splitSet)
 S3method(hist, splitSet)
 S3method(image, splitSet)
 S3method(print, split)
-

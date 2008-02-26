@@ -1,12 +1,13 @@
 \name{hist.splitSet}
 \alias{hist.splitSet}
+\alias{hist,splitSet-method}
 \title{Overview Histogram for splitSets}
 \description{
   Draws a histogram of empirical p-values and shows the corresponding
   q-values corrected for multiple testing.
 }
 \usage{
-hist.splitSet(x, main = "Distribution of p-Values", 
+\method{hist}{splitSet}(x, main = "Distribution of p-Values", 
               xlab = "p-values", col = "grey", xlim = c(0, 1), ...)
 }
 \arguments{

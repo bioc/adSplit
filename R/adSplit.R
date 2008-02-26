@@ -2,7 +2,7 @@ adSplit <- function(mydata, annotation.ids, chip.name, min.probes=20, max.probes
                     B=NULL, min.group.size=5, ngenes=50, ignore.genes=5) {
 
   # initialize
-  if (class(mydata) %in% c("exprSet","ExpressionSet")) mydata <- exprs(mydata)
+  if (is(mydata,"ExpressionSet")) mydata <- exprs(mydata)
   nsamples <- ncol(mydata)
   nprobesets <- nrow(mydata)
   if (is.null(max.probes)) max.probes <- round(nrow(mydata)/10, 0)

@@ -1,12 +1,13 @@
 \name{image.splitSet}
 \alias{image.splitSet}
+\alias{image,splitSet-method}
 \title{Illustrate Split Sets}
 \description{
   Draws an image of all splits, one per row, of a \code{splitSet}
   object. Each column corresponds to a patient.
 }
 \usage{
-image.splitSet(x, filter.fdr = 1, main = "", show.graph = FALSE, 
+\method{image}{splitSet}(x, filter.fdr = 1, main = "", show.graph = FALSE, 
                max.label.length = 50, full.names = TRUE, 
                xlab = NULL, sample.labels = FALSE, 
                col = c("yellow", "red"), invert = FALSE, 
@@ -15,7 +16,7 @@ image.splitSet(x, filter.fdr = 1, main = "", show.graph = FALSE,
 \arguments{
   \item{x}{the object of class \code{splitSet} to be illustrated.}
   \item{filter.fdr}{worst acceptable false discovery rate for the
-    shown set of splits. All splits with q-values beloww this level are
+    shown set of splits. All splits with q-values below this level are
     dropped from the image.}
   \item{main}{a title for the image.}
   \item{show.graph}{whether hierarchical relations between GO terms
@@ -56,6 +57,3 @@ data(golubKEGGSplits)
 image(golubKEGGSplits, filter.fdr=0.5)
 }
 \keyword{hplot}
-
-
-
