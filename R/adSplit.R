@@ -10,7 +10,7 @@ adSplit <- function(mydata, annotation.ids, chip.name, min.probes=20, max.probes
   class(collected.res) <- "splitSet"
 
   # get annotation ids if not provided directly
-  require(package=chip.name, character.only=TRUE)
+  require(package=paste(chip.name,".db",sep=""), character.only=TRUE)
   GOenv   <- eval(as.symbol(paste(chip.name, "GO2ALLPROBES", sep="")))
   KEGGenv <- eval(as.symbol(paste(chip.name, "PATH2PROBE", sep="")))
   chipProebeSets <- length(eval(as.symbol(paste(chip.name, "ACCNUM",sep=""))))
@@ -21,7 +21,7 @@ adSplit <- function(mydata, annotation.ids, chip.name, min.probes=20, max.probes
       annotation.ids <- ls(GOenv)
     } else {
       if (annotation.ids == "KEGG") {
-        annotation.ids <- paste("KEGG:", ls(KEGGenv), sep="")
+        annotation.ids <- paste("KEGG:", Rkeys(KEGGenv), sep="")
       }  else {
         if (annotation.ids == "all")  
           annotation.ids <- c(ls(GOenv), paste("KEGG:", ls(KEGGenv), sep=""))
@@ -32,11 +32,11 @@ adSplit <- function(mydata, annotation.ids, chip.name, min.probes=20, max.probes
     # find probesets
     if (id == "all") next
     if (length(grep("GO:", id)) == 1) {
-      probes <- get(id, GOenv)
+      probes <- GOenv[[id]]
     } else {
       if (length(grep("KEGG:", id)) == 1) {
         tmp.id <- sub("KEGG:","",id)
-        probes <- get(tmp.id, KEGGenv)
+        probes <- KEGGenv[[tmp.id]]
       } else {
         stop("'", id, "' is not recognized as GO or KEGG identifier")
       }
@@ -109,11 +109,11 @@ print.splitSet <- function(x, ...) {
   } else { # just a single split
     id <- rownames(x$cuts)
     if (length(grep("GO:", id)) == 1) {
-      term <- attr(get(id, GOTERM),"Term")
+      term <- attr(GOTERM[[id]],"Term")
     } else {
       if (length(grep("KEGG:", id)) == 1) {
         tmp.id <- sub("KEGG:","",id)
-        term <- get(tmp.id, KEGGPATHID2NAME)
+        term <- KEGGPATHID2NAME[[tmp.id]]
       } else {
         stop("'", id, "' is not recognized as GO or KEGG identifier")
       }
@@ -148,9 +148,9 @@ makeEID2PROBESenv <- function(EIDenv) {
   # expects a hash with ENTREZIDs as values and Affy-probes as keys
   # generates a hash with ENTREZIDs as keys and Affy-probes as values
   env <- new.env(hash=TRUE)
-  for (affyid in ls(EIDenv)) {
-    lid <- as.character(get(affyid, EIDenv))
-    if (!exists(lid, env)) assign(lid, affyid, env)
+  for (affyid in Lkeys(EIDenv)) {
+    lid <- as.character(EIDenv[[affyid]])
+    if (!is.null(lid)) assign(lid, affyid, env)
     else assign(lid, c(get(lid, env), affyid), env)
   }
   return(env)
@@ -172,7 +172,7 @@ randomDiana2means <- function(nprobes,data,chip,ndraws=10000, ngenes=50,ignore.g
   #ignore.genes: number of genes to disregard for score calculation
   cat("  determining", ndraws, "random DLD-scores with",nprobes,
       "probe sets each (wait for", round(ndraws/100,0), "dots)\n  ")
-  require(package=chip, character.only=TRUE)
+  require(package=paste(chip,".db",sep=""), character.only=TRUE)
   randscores <- numeric(ndraws) # initialize
   EIDenv <- eval(as.symbol(paste(chip, "ENTREZID", sep="")))
   EID2PSenv <- makeEID2PROBESenv(EIDenv)

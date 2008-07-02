@@ -17,7 +17,7 @@ makeEID2PROBESenv(EIDenv)
 } 
 \author{Joern Toedling, Claudio Lottaz} 
 \examples{ 
-library(hu6800)
+library(hu6800.db)
 makeEID2PROBESenv(hu6800ENTREZID) 
 }
 

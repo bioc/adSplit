@@ -1,5 +1,5 @@
 %\VignetteIndexEntry{Annotation-Driven Clustering}
-%\VignetteDepends{golubEsets, hu6800}
+%\VignetteDepends{golubEsets, hu6800.db}
 %\VignetteKeywords{clustering microarrays GO KEGG functional annotation}
 %\VignettePackage{adSplit}
 
@@ -27,7 +27,7 @@
 \reportnr{02}
 \year{2005}
 \abstract{
-  This is the vignette of the Bioconductor compliant packege
+  This is the vignette of the Bioconductor compliant package
   \Rpackage{adSplit}. We describe our implementation of {\it annotation-
   driven clustering} for microarray gene expression profiling 
   studies.

@@ -24,12 +24,12 @@ image.splitSet <- function(x, filter.fdr=1, main="", show.graph=FALSE,
     for (i in 1:length(ids)) {
       rowid <- ids[i]
       if (length(grep("^GO:", rowid)) > 0) { # GO
-        tmp <- get(rowid, GOTERM)
+        tmp <- GOTERM[[rowid]]
         desc <- attr(tmp, "Term")
         onto <- attr(tmp, "Ontology")
       } else { # KEGG
         id <- sub("^KEGG:", "", rowid)
-        desc <- get(id, KEGGPATHID2NAME)
+        desc <- KEGGPATHID2NAME[[id]]
         onto <- "KEGG"
       }
       desc <- paste(onto, ":", desc)
@@ -131,7 +131,7 @@ image.splitSet <- function(x, filter.fdr=1, main="", show.graph=FALSE,
 
 computeOverlap <- function(cuts, chip.name, expr.mat=NULL) {
   # determine genes associated to cuts
-  require(package=chip.name, character.only=TRUE)
+  require(package=paste(chip.name,".db",sep=""), character.only=TRUE)
   genes <- list()
   env <- eval(as.symbol(paste(chip.name, "GO2ALLPROBES", sep="")))
   for (i in grep("GO:", rownames(cuts))) {

@@ -21,7 +21,7 @@ drawRandomPS(nps, EID2PSenv, allEIDs)
 \author{Claudio Lottaz}
 \examples{
 # draw ten random probe-sets from hu6800
-library(hu6800)
+library(hu6800.db)
 EID2PSenv <- makeEID2PROBESenv(hu6800ENTREZID)
 drawRandomPS(10, EID2PSenv, ls(EID2PSenv))
 }
