@@ -13,7 +13,9 @@ Description: The program implements the class discovery method for
   Vingron, ISMB 2001, Bioinformatics 17, suppl. 1 (2001) p. 107. 
 URL: http://www.r-project.org, http://www.molgen.mpg.de/~heydebre/software.html
 ----------------------------------------------------------------------- */
+#include <stdio.h>
 #include <cstdio>
+#include <stdlib.h>
 #include <cstdlib>
 #include <string>
 #include "math.h"
