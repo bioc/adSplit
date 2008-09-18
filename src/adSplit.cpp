@@ -18,6 +18,7 @@ URL: http://www.r-project.org, http://www.molgen.mpg.de/~heydebre/software.html
 #include <stdlib.h>
 #include <cstdlib>
 #include <string>
+#include <string.h>
 #include "math.h"
 
 #define CAREFUL
