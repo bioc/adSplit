@@ -88,9 +88,11 @@ x <- adSplit(Golub_Merge, c("GO:0007165","GO:0006915"), "hu6800", max.probes=700
 # an empirical p-value
 x <- adSplit(Golub_Merge, "KEGG:00251", "hu6800", B=100)
 
+\dontrun{
 # generate splits for all KEGG pathways.
 x <- adSplit(Golub_Merge, "KEGG", "hu6800")
 image(x)
+}
 }
 \keyword{datagen}
 

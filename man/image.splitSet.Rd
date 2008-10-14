@@ -7,9 +7,8 @@
   object. Each column corresponds to a patient.
 }
 \usage{
-\method{image}{splitSet}(x, filter.fdr = 1, main = "", show.graph = FALSE, 
-               max.label.length = 50, full.names = TRUE, 
-               xlab = NULL, sample.labels = FALSE, 
+\method{image}{splitSet}(x, filter.fdr = 1, main = "", max.label.length = 50, 
+               full.names = TRUE, xlab = NULL, sample.labels = FALSE, 
                col = c("yellow", "red"), invert = FALSE, 
                outfile = NULL, res = 72, pointsize = 7, ...)
 }
@@ -19,9 +18,6 @@
     shown set of splits. All splits with q-values below this level are
     dropped from the image.}
   \item{main}{a title for the image.}
-  \item{show.graph}{whether hierarchical relations between GO terms
-    should be illustrated in a graph-like display to the left of the
-    image.}
   \item{max.label.length}{Maximal length of the annotations shown to
     the right of the image. Longer annotations are truncated.}
   \item{full.names}{Show full names for annotations instead of their

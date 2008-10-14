@@ -1,7 +1,7 @@
 Package: adSplit
 Title: Annotation-Driven Clustering
-Version: 1.11.3
-Date: 2008-09-18
+Version: 1.11.4
+Date: 2008-10-14
 Author: Claudio Lottaz, Joern Toedling
 Description: This package implements clustering of microarray
 	gene expression profiles according to functional 

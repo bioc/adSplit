@@ -17,7 +17,7 @@ URL: http://www.r-project.org, http://www.molgen.mpg.de/~heydebre/software.html
 #include <cstdio>
 #include <stdlib.h>
 #include <cstdlib>
-#include <string>
+#include <string.h>
 #include <string.h>
 #include "math.h"
 

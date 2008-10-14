@@ -1,5 +1,4 @@
-image.splitSet <- function(x, filter.fdr=1, main="", show.graph=FALSE, 
-                           max.label.length=50, full.names=TRUE, 
+image.splitSet <- function(x, filter.fdr=1, main="", max.label.length=50, full.names=TRUE, 
                            xlab=NULL, sample.labels=FALSE, 
                            col=c("yellow","red"), invert=FALSE,
                            outfile=NULL, res=72, pointsize=7, ...) {
@@ -55,7 +54,7 @@ image.splitSet <- function(x, filter.fdr=1, main="", show.graph=FALSE,
   right.label.widths <- strwidth(right.labels, units="inches")
   if (sample.labels) sample.label.widths <- strwidth(colnames(x$cuts), units="inches")
   else sample.label.widths <- 0
-  left.add <- ifelse(show.graph, 0.2, 0.5)
+  left.add <- 0.5
   margins <- c(0.5 + max(sample.label.widths), max(left.label.widths) + left.add, 
                0.5, max(right.label.widths) + 0.5)
   height <- 1.0 + max(sample.label.widths) + 1.3 * nrow(x$cuts) * pointsize/72
@@ -76,32 +75,9 @@ image.splitSet <- function(x, filter.fdr=1, main="", show.graph=FALSE,
                horizontal=TRUE, paper="special")
   }
   if (invert) par(bg="black", fg="white", col.axis="white", col.main="white") 
-  if (show.graph) {
-    par(mai=c(margins[1], 0.5, margins[3], 0.0), fig=c(0.0, leftsplit, 0.0, 1.0))
-    root.dist <<- rep(0, length(ids))
-    names(root.dist) <<- ids
-    graph.lines <- collect.lines("GO:0003673", "", 0, grep("GO:", ids, value=TRUE))
-    tmp <- 0.5/(ncol(x$cuts)-1)
-    image(matrix(0,2,2), col="transparent", xlab="", ylab="", axes=FALSE,
-         xlim=c(min(root.dist)-1, max(root.dist)+1), ylim=c(-tmp,1.0+tmp))
-    points(root.dist, label.pos[inv.dx], pch=19)
-#    for (i in 1:length(root.dist)) {
-#      lines(c(root.dist[i], max(root.dist)), rep(label.pos[inv.dx[i]], 2), lty=1,lwd=0.1)
-#    }
-    for (i in 1:nrow(graph.lines)) {
-      pos <- graph.lines[i,]
-      lines(root.dist[pos], label.pos[inv.dx[pos]])
-    }
-    mtext("GO-", side=1, line=0.5)
-    mtext("Structure", side=1, line=1.5)
-  }
 
   # draw the image
-  if(show.graph) {
-    par(las=1, mai=margins, fig=c(leftsplit,1.0,0.0,1.0), new=TRUE)
-  } else {
-    par(las=1, mai=margins)
-  }
+  par(las=1, mai=margins)
   image(t(x$cuts[dx$order, dy$order]), axes=FALSE, zlim=c(0,1), main=main, col=col, ...)
   grid(ncol(x$cuts), nrow(x$cuts), lty=1, lwd=0.5, col="white")
   if (!is.null(x$pvalues)) {
@@ -180,110 +156,4 @@ scatterpairs <- function(res, chip.name="hgu133a", expr.mat=NULL) {
   overlap <- as.vector(computeOverlap(res$cuts, chip.name, expr.mat))
   hamming <- as.vector(computeHamming(res$cuts))
   plot(overlap, hamming)
-}
-
-figure_ccimage <- function() {
-  load("../results/brain_pomeroy/filtered.rdat")
-  cc_image(res, pointsize=8, outfile="../plos/allsplits_pomeroy.eps")
-#  system("epstopdf ../plos/allsplits_pomeroy.eps")
-
-  # scatter plot for pairs
-#  postscript("../plos/scatterpairs.eps", pointsize=8, width=7.0, height=6.0,
-#             paper="special", horizontal=FALSE)
-#  scatterpairs(res, "hgu133a")
-#  dev.off()
-#  system("epstopdf ../plos/scatterpairs.eps")
-}
-
-# Figure
-# for induced graph for clinical correlation
-figure_induced <- function() {
-  load("../results/evalCorrelation.RData")
-  goids <- as.character(rossResult$frame[1:7,1])
-  gcc <- oneGOGraph(goids[1], GOCCPARENTS)
-  gbp <- GOGraph(goids[2:7], GOBPPARENTS)
-  g <- join(gbp, gcc)
-
-  # write a .dot-file since I don't manage to use Rgraphviz
-  cat("digraph {\ncenter=TRUE;\nrankdir=LR;\nsize=\"9,6\";\n",
-      "node [style=filled,fontname=\"Helvetica\",fontsize=\"10\"];\n",
-      sep="", file="../plos/induced.dot")
-  for (n in nodes(g)) {
-    curColor <- ifelse(n %in% goids, "yellow", "white")
-    cat('"', n, '" [fillcolor=', curColor, "];\n",
-        sep="", file="../plos/induced.dot", append=TRUE)
-  }
-  e <- edges(g)
-  for (i in 1:length(e)) {
-    for (n in e[[i]]) {
-      cat('"', n, '" -> "', names(e)[i], "\"\n",
-          sep="", file="../plos/induced.dot", append=TRUE)
-    }
-  }
-  cat("}\n", file="../plos/induced.dot", append=TRUE)
-
-  system("dot -Tps < ../plos/induced.dot > ../plos/induced.eps")
-
-# replaced the following stuff with using dot instead of Rgraphviz
-#  postscript("../plos/induced.eps", pointsize=8, width=6.0, height=6.0,
-#             paper="special", horizontal=FALSE)
-#  seedColors <- rep("yellow", length(goids))
-#  names(seedColors) <- goids
-#  plot(g,
-#       attrs=list(graph=list(rankdir="LR"),
-#                  node=list(shape="ellipse", fontsize="8"),
-#                  edges=list(arrowhead="none", dir="back")),
-#       nodeAttrs=list(fillcolor=seedColors))
-#  dev.off()
-
-  system("epstopdf ../plos/induced.eps")
-  system("cp ../plos/induced.pdf /home/web/lottaz/tmp")
-  system("chmod 644 /home/web/lottaz/tmp/induced.pdf")
-
-  # write and compile a tex-file including the GO terms for g
-  setwd("../plos")
-  nds <- sort(nodes(g))
-  nbucket <- round(length(nds)/3, 0)
-  rest <- length(nds) %% nbucket  # to be added to the first minipage
-  cat('\\documentclass{article}',
-      '\\usepackage{graphicx}',
-      '\\pagestyle{empty}',
-      '\\textwidth=17cm',
-      '\\begin{document}',
-      '  \\begin{center}',
-      '    \\includegraphics[width=12cm]{induced}',
-      '    \\begin{tabular}{l@{}l@{}l}',
-      '      \\begin{minipage}[b]{5cm} \\tiny',
-      sep="\n", file="induced_go.tex")
-  for (i in 1:(nbucket+rest)) {
-    cat("       ", nds[i], gsub("_"," ",attr(get(nds[i], GOTERM), "Term")), '\\\\\n',
-        sep=" ", file="induced_go.tex", append=TRUE)
-  }
-  cat('      \\end{minipage} &',
-      '      \\begin{minipage}[b]{5cm} \\tiny ',
-
-      sep="\n", file="induced_go.tex", append=TRUE)
-  for (i in (nbucket+rest+1):(2*nbucket+rest)) {
-    cat("       ", nds[i], gsub("_"," ",attr(get(nds[i], GOTERM), "Term")), '\\\\\n',
-        sep=" ", file="induced_go.tex", append=TRUE)
-  }
-  cat('      \\end{minipage} &',
-      '      \\begin{minipage}[b]{5cm} \\tiny ',
-      sep="\n", file="induced_go.tex", append=TRUE)
-  for (i in (2*nbucket+rest+1):length(nds)) {
-    cat("       ", nds[i], gsub("_"," ",attr(get(nds[i], GOTERM), "Term")), '\\\\\n',
-        sep=" ", file="induced_go.tex", append=TRUE)
-  }
-  cat('      \\end{minipage} \\\\',
-      '    \\end{tabular}',
-      '  \\end{center}',
-      '\\end{document}',
-      sep="\n", file="induced_go.tex", append=TRUE)
-  system("latex induced_go")
-  system("dvips induced_go")
-  readline(paste("Use Ghostview interactively to convert induced_go.ps to induced_go.eps",
-                 "then hit return...", sep="\n"))
-  system("epstopdf induced_go.eps")
-
-  setwd("../src")
 }
