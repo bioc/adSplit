@@ -12,9 +12,9 @@
 %   Say hi
 %
 
-\def\fileversion{1.0}
+\def\fileversion{1.1}
 \def\filename{compdiag}
-\def\filedate{2005/02/05}
+\def\filedate{2010/04/15}
 
 \ProvidesPackage{compdiag}[\filedate\space\fileversion\space CompDiag
                  package by FM & CL]
@@ -25,13 +25,7 @@
 %
 
 % are we using pdftex or normaltex
-\newif\ifpdf
-\ifx\pdfoutput\undefined
-   \pdffalse
-\else
-   \pdfoutput=1
-   \pdftrue
-\fi
+\usepackage{ifpdf}
 
 \ifpdf
   \usepackage[pdftex]{graphicx}
