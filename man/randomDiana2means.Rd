@@ -11,7 +11,7 @@ randomDiana2means(nprobes, data, chip, ndraws = 10000,
 }
 \arguments{
   \item{nprobes}{the size of gene sets.}
-  \item{data}{a matrix of expression data, rows corerspond to genes, columns to samples.}
+  \item{data}{a matrix of expression data, rows correspond to genes, columns to samples.}
   \item{chip}{the name of the used chip.}
   \item{ndraws}{the number of DLD scores computed.}
   \item{ngenes}{the number of genes used to compute DLD scores (passed

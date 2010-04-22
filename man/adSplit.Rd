@@ -3,8 +3,8 @@
 \title{Annotation-Driven Splits}
 \description{
   This function searches for annotation-driven splits of patients in
-  microarray data. A split is a partitionning of patients into two
-  groups. In order to do so it referes to GO terms and KEGG
+  microarray data. A split is a partitioning of patients into two
+  groups. In order to do so it refers to GO terms and KEGG
   pathways. In addition, a significance measure can be computed by
   simulating a random distribution of scores. DLD-scores are used 
   to judge the quality of a split.

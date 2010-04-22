@@ -20,8 +20,8 @@ diana2means(mydata, mingroupsize = 5,
   \item{ngenes}{number of genes used to compute cluster quality DLD-score.}
   \item{ignore.genes}{number of best scoring genes to be ignored when
      computing DLD-scores.}
-  \item{return.cut}{logical, whether to actuelly return the
-    attributions of samples to groups.}  
+  \item{return.cut}{logical, whether to return the attributions of samples
+     to groups.}  
 } 
 \details{
 

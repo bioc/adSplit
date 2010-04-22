@@ -23,7 +23,7 @@
 \details{
   This function draws a regular histogram of empirical p-values
   observed in the splitSet at hand. The corresponding q-values,
-  corrected by the method suggested by Benjamini-Hochberg, are plottet
+  corrected by the method suggested by Benjamini-Hochberg, are plotted
   into the same graph. The scale for the q-values is shown at the left
   hand side of the plot.
 }
