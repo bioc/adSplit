@@ -1,10 +1,17 @@
 useDynLib(adSplit)
 
 import(methods)
-importFrom(graphics, hist, image)
-importFrom(stats, cutree, kmeans)
-importFrom(cluster, diana)
-#importFrom(multtest, mt.rawp2adjp)
+
+importMethodsFrom(AnnotationDbi, Lkeys, Rkeys)
+importMethodsFrom(Biobase, exprs)
+importFrom(cluster, agnes, diana)
+importFrom(graphics, axis, box, grid, hist, image, lines, mtext, par,
+           plot, strwidth)
+importFrom(grDevices, dev.off, postscript, X11)
+importFrom(multtest, mt.rawp2adjp)
+importFrom(stats, as.hclust, cutree, kmeans, var)
+importFrom(GO.db, GOTERM)
+importFrom(KEGG.db, KEGGPATHID2NAME)
 
 export(adSplit, diana2means, drawRandomPS, 
        randomDiana2means, makeEID2PROBESenv)

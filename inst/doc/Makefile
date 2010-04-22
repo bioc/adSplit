@@ -7,6 +7,5 @@ pdf:	tr_2005_02.tex
 	pdflatex tr_2005_02
 
 clean:
-	rm -f *.out *.bbl *.log *.aux *.blg *.toc  *~ err.rda splitSet*
-	rm -f *.dvi *.ps tr_2005_02-* *.html Rplots* tr_2005_02.tex
-
+	rm -f *.aux	*.eps *.log *.out *.tex *.toc
+	rm -f Rplots.ps splitSet.pdf tr_2005_02-*
