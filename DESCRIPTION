@@ -1,6 +1,6 @@
 Package: adSplit
 Title: Annotation-Driven Clustering
-Version: 1.23.0
+Version: 1.24.0
 Date: 2010-04-21
 Author: Claudio Lottaz, Joern Toedling
 Description: This package implements clustering of microarray
