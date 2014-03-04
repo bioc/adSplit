@@ -1,20 +1,20 @@
 Package: adSplit
 Title: Annotation-Driven Clustering
-Version: 1.33.1
+Version: 1.33.2
 Date: 2010-04-21
 Author: Claudio Lottaz, Joern Toedling
-Description: This package implements clustering of microarray
-	gene expression profiles according to functional 
-	annotations. For each term genes are annotated to,
-	splits into two subclasses are computed and a
-	significance of the supporting gene set is determined.
+Description: This package implements clustering of microarray gene
+        expression profiles according to functional annotations. For
+        each term genes are annotated to, splits into two subclasses
+        are computed and a significance of the supporting gene set is
+        determined.
 Maintainer: Claudio Lottaz <Claudio.Lottaz@klinik.uni-regensburg.de>
 Depends: R (>= 2.1.0), methods (>= 2.1.0)
-Imports: AnnotationDbi, Biobase (>= 1.5.12), cluster (>= 1.9.1),
-         GO.db (>= 1.8.1), graphics, grDevices, KEGG.db (>= 1.8.1),
-         methods, multtest (>= 1.6.0), stats (>= 2.1.0)
+Imports: AnnotationDbi, Biobase (>= 1.5.12), cluster (>= 1.9.1), GO.db
+        (>= 1.8.1), graphics, grDevices, KEGG.db (>= 1.8.1), methods,
+        multtest (>= 1.6.0), stats (>= 2.1.0)
 Suggests: golubEsets (>= 1.0), vsn (>= 1.5.0), hu6800.db (>= 1.8.1)
-biocViews: Microarray, Bioinformatics, Clustering
-LazyLoad:	yes
+LazyLoad: yes
 URL: http://compdiag.molgen.mpg.de/software/index.shtml
 License: GPL (>= 2)
+biocViews: Microarray, Clustering
