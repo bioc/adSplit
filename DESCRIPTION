@@ -15,6 +15,6 @@ Imports: AnnotationDbi, Biobase (>= 1.5.12), cluster (>= 1.9.1), GO.db
         multtest (>= 1.6.0), stats (>= 2.1.0)
 Suggests: golubEsets (>= 1.0), vsn (>= 1.5.0), hu6800.db (>= 1.8.1)
 LazyLoad: yes
-URL: http://compdiag.molgen.mpg.de/software/index.shtml
+URL: http://compdiag.molgen.mpg.de/software/adSplit.shtml
 License: GPL (>= 2)
 biocViews: Microarray, Clustering
