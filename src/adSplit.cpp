@@ -71,10 +71,10 @@ private:
   char message[256];
   int line;
 public:
-  Tomato(int l, char* msg) { 
+  Tomato(int l, const char* msg) { 
     line=l; 
-    if (strlen(msg) > 255) msg[255]=0;
-    strcpy(message, msg);
+    strncpy(message, msg, 256);
+    message[255] = 0;
   }
   void print() {
     printf("Exception in %s, line %d: %s\n", __FILE__, line, message);
