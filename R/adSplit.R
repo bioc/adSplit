@@ -113,7 +113,7 @@ print.splitSet <- function(x, ...) {
     } else {
       if (length(grep("KEGG:", id)) == 1) {
         tmp.id <- sub("KEGG:","",id)
-        term <- KEGGPATHID2NAME[[tmp.id]]
+        term <- id # term <- KEGGPATHID2NAME[[tmp.id]] # KEGG.db is not longer availble# 
       } else {
         stop("'", id, "' is not recognized as GO or KEGG identifier")
       }

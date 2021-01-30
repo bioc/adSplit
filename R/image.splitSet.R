@@ -28,7 +28,7 @@ image.splitSet <- function(x, filter.fdr=1, main="", max.label.length=50, full.n
         onto <- attr(tmp, "Ontology")
       } else { # KEGG
         id <- sub("^KEGG:", "", rowid)
-        desc <- KEGGPATHID2NAME[[id]]
+        desc <- rowid # desc <- KEGGPATHID2NAME[[id]] # KEGG.db is no longer available
         onto <- "KEGG"
       }
       desc <- paste(onto, ":", desc)

@@ -11,7 +11,7 @@ importFrom(grDevices, dev.off, postscript, X11)
 importFrom(multtest, mt.rawp2adjp)
 importFrom(stats, as.hclust, cutree, kmeans, var)
 importFrom(GO.db, GOTERM)
-importFrom(KEGG.db, KEGGPATHID2NAME)
+# importFrom(KEGG.db, KEGGPATHID2NAME) # KEGG.db is not longer available
 
 export(adSplit, diana2means, drawRandomPS, 
        randomDiana2means, makeEID2PROBESenv)
