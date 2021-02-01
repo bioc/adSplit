@@ -84,9 +84,9 @@ data(Golub_Merge)
 x <- adSplit(Golub_Merge, "GO:0006915", "hu6800")
 x <- adSplit(Golub_Merge, c("GO:0007165","GO:0006915"), "hu6800", max.probes=7000)
 
-# generate a split for glutamate metabolism including 
+# generate a split for alanine, aspartate and glutamate metabolism including 
 # an empirical p-value
-x <- adSplit(Golub_Merge, "KEGG:00251", "hu6800", B=100)
+x <- adSplit(Golub_Merge, "KEGG:00250", "hu6800", B=100)
 
 \dontrun{
 # generate splits for all KEGG pathways.
